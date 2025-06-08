@@ -15,6 +15,17 @@ struct AircraftData {
     double attitude_pitch_radians;
     double gear_handle_position;
     double plane_heading_degrees_true;
+    double gear_damage_by_speed;
+    double gear_warning_center;
+    double gear_warning_left;
+    double gear_warning_right;
+    double gear_pos_center;
+    double gear_pos_left;
+    double gear_pos_right;
+    double eng_rpm_1;
+    double eng_rpm_2;
+    double eng_rpm_3;
+    double eng_rpm_4;
 };
 
 class SimConnectClient : public QObject
@@ -30,9 +41,10 @@ public:
 public slots:
     void connectToSim();
     void disconnectFromSim();
-    void toggleGear();
+    void setGear(bool down);
     void toggleParkingBrake();
     void toggleAutopilot();
+    void setEngineState(int engineIndex, bool start);
 
 signals:
     void connected();
@@ -59,9 +71,11 @@ private:
     };
     
     enum class EVENT_ID {
-        GEAR_TOGGLE,
+        GEAR_SET_EVENT,
         PARKING_BRAKE_TOGGLE,
         AP_MASTER_TOGGLE,
+        ENGINE_START,
+        ENGINE_SHUTDOWN
     };
 };
 

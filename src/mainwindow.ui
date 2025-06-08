@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>968</width>
-    <height>324</height>
+    <height>340</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,7 +16,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="1" column="0">
-     <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="2,3,3">
+     <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,2">
       <item>
        <layout class="QVBoxLayout" name="verticalLayout_3" stretch="0,2">
         <item>
@@ -97,6 +97,37 @@
                   </property>
                  </widget>
                 </item>
+                <item>
+                 <widget class="QLabel" name="gearCenterLabel">
+                  <property name="text">
+                   <string>C: ---%</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="gearLeftLabel">
+                  <property name="text">
+                   <string>L: ---%</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="gearRightLabel">
+                  <property name="text">
+                   <string>R: ---%</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="gearWarningLabel">
+                  <property name="styleSheet">
+                   <string notr="true">color: red; font-weight: bold;</string>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                 </widget>
+                </item>
                </layout>
               </widget>
              </item>
@@ -128,10 +159,79 @@
        </layout>
       </item>
       <item>
-       <widget class="AttitudeIndicator" name="attitudeIndicator" native="true"/>
-      </item>
-      <item>
-       <widget class="Compass" name="compass" native="true"/>
+       <layout class="QVBoxLayout" name="verticalLayout_4" stretch="2,1">
+        <item>
+         <layout class="QHBoxLayout" name="horizonLayout" stretch="1,1">
+          <item>
+           <widget class="AttitudeIndicator" name="attitudeIndicator" native="true"/>
+          </item>
+          <item>
+           <widget class="Compass" name="compass" native="true"/>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="engineGroup">
+          <property name="title">
+           <string>Engines</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_2">
+           <item row="1" column="0">
+            <widget class="QPushButton" name="eng1Button">
+             <property name="text">
+              <string>Start Eng 1</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="RpmIndicator" name="rpmIndicator1" native="true"/>
+           </item>
+           <item row="0" column="1">
+            <widget class="RpmIndicator" name="rpmIndicator2" native="true"/>
+           </item>
+           <item row="0" column="2">
+            <widget class="RpmIndicator" name="rpmIndicator3" native="true"/>
+           </item>
+           <item row="1" column="1">
+            <widget class="QPushButton" name="eng2Button">
+             <property name="text">
+              <string>Start Eng 2</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
+            <widget class="QPushButton" name="eng3Button">
+             <property name="text">
+              <string>Start Eng 3</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="3">
+            <widget class="RpmIndicator" name="rpmIndicator4" native="true"/>
+           </item>
+           <item row="1" column="3">
+            <widget class="QPushButton" name="eng4Button">
+             <property name="text">
+              <string>Start Eng 4</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </item>
@@ -172,6 +272,12 @@
    <class>Compass</class>
    <extends>QWidget</extends>
    <header>Compass.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>RpmIndicator</class>
+   <extends>QWidget</extends>
+   <header>RpmIndicator.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

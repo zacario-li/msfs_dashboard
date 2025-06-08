@@ -6,6 +6,7 @@
 #include "SimConnectClient.h"
 #include "AttitudeIndicator.h"
 #include "Compass.h"
+#include "RpmIndicator.h"
 
 namespace Ui {
     class MainWindow;
@@ -25,11 +26,14 @@ private slots:
     void onSimDisconnected();
     void onAircraftDataUpdated(const AircraftData &data);
     void on_actionsource_code_triggered();
+    void onGearButtonToggled(bool checked);
+    void onEngineButtonToggled(bool checked);
 
 private:
     void updateControlsState(bool isConnected);
 
     SimConnectClient *m_simConnectClient;
     Ui::MainWindow *ui;
+    AircraftData m_currentAircraftData;
 };
 #endif // MAINWINDOW_H 
