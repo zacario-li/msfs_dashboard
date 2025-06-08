@@ -2,7 +2,7 @@
 #include "ui_mainwindow.h"
 #include <QDesktopServices>
 #include <QUrl>
-#include <QDebug>
+#include <loguru.hpp>
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -58,6 +58,7 @@ void MainWindow::onConnectClicked()
 
 void MainWindow::onSimConnected()
 {
+    LOG_F(INFO, "SimConnect connected - updating UI state");
     ui->connectButton->setText("Disconnect");
     ui->statusLight->setStyleSheet("border-radius: 10px; background-color: green;");
     updateControlsState(true);
@@ -65,6 +66,7 @@ void MainWindow::onSimConnected()
 
 void MainWindow::onSimDisconnected()
 {
+    LOG_F(INFO, "SimConnect disconnected - resetting UI state");
     ui->connectButton->setText("Connect");
     ui->statusLight->setStyleSheet("border-radius: 10px; background-color: red;");
     updateControlsState(false);
@@ -100,6 +102,8 @@ void MainWindow::onSimDisconnected()
 
 void MainWindow::onAircraftDataUpdated(const AircraftData &data)
 {
+    VLOG_F(2, "Aircraft data updated - gear: %.1f%%, heading: %.1f°", 
+           data.gear_total_extended_pct * 100.0, data.plane_heading_degrees_true);
     m_currentAircraftData = data;
 
     // Update Gear
@@ -186,7 +190,10 @@ void MainWindow::on_actionsource_code_triggered()
 void MainWindow::onGearButtonToggled(bool checked)
 {
     if (m_simConnectClient->isConnected()) {
+        LOG_F(INFO, "Gear button toggled: %s", checked ? "DOWN" : "UP");
         m_simConnectClient->transmitEvent(checked ? SimConnectClient::EVENT_GEAR_DOWN : SimConnectClient::EVENT_GEAR_UP);
+    } else {
+        LOG_F(WARNING, "Gear button toggled but SimConnect not connected");
     }
 }
 

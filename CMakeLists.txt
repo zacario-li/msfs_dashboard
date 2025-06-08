@@ -13,6 +13,16 @@ set(CMAKE_PREFIX_PATH "C:/Qt/6.9.0/msvc2022_64")
 
 find_package(Qt6 REQUIRED COMPONENTS Widgets Core Gui)
 
+# Add loguru logging library
+include(FetchContent)
+FetchContent_Declare(LoguruGitRepo
+    GIT_REPOSITORY "https://github.com/emilk/loguru"
+    GIT_TAG        "master"
+)
+# Set loguru compile-time flags
+set(LOGURU_WITH_STREAMS TRUE)
+FetchContent_MakeAvailable(LoguruGitRepo)
+
 # User-provided SimConnect SDK path
 set(SIMCONNECT_SDK_PATH "C:/MSFS SDK/SimConnect SDK")
 include_directories(
@@ -35,6 +45,7 @@ target_link_libraries(MSFSDashboard PRIVATE
     Qt6::Widgets 
     Qt6::Core
     Qt6::Gui
+    loguru::loguru
     "${SIMCONNECT_SDK_PATH}/lib/SimConnect.lib"
 )
 

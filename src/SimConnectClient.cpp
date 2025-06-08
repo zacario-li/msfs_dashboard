@@ -1,5 +1,5 @@
 #include "SimConnectClient.h"
-#include <QDebug>
+#include <loguru.hpp>
 
 SimConnectClient::SimConnectClient(QObject *parent) : QObject(parent)
 {
@@ -21,7 +21,7 @@ void SimConnectClient::connectToSim()
 {
     if (SUCCEEDED(SimConnect_Open(&hSimConnect, "MSFS Dashboard", nullptr, 0, 0, 0)))
     {
-        qDebug() << "Connected to MSFS.";
+        LOG_F(INFO, "Connected to MSFS.");
         emit connected();
 
         setupDataRequests();
@@ -31,7 +31,7 @@ void SimConnectClient::connectToSim()
     }
     else
     {
-        qDebug() << "Failed to connect to MSFS.";
+        LOG_F(ERROR, "Failed to connect to MSFS.");
     }
 }
 
@@ -42,7 +42,7 @@ void SimConnectClient::disconnectFromSim()
         processTimer->stop();
         SimConnect_Close(hSimConnect);
         hSimConnect = nullptr;
-        qDebug() << "Disconnected from MSFS.";
+        LOG_F(INFO, "Disconnected from MSFS.");
         emit disconnected();
     }
 }
@@ -59,7 +59,12 @@ void SimConnectClient::transmitEvent(EVENT_ID eventId, DWORD data)
 {
     if (hSimConnect)
     {
+        VLOG_F(1, "Transmitting SimConnect event: ID=%d, data=%lu", static_cast<int>(eventId), data);
         SimConnect_TransmitClientEvent(hSimConnect, SIMCONNECT_OBJECT_ID_USER, eventId, data, SIMCONNECT_GROUP_PRIORITY_HIGHEST, SIMCONNECT_EVENT_FLAG_GROUPID_IS_PRIORITY);
+    }
+    else
+    {
+        LOG_F(WARNING, "Cannot transmit event - SimConnect not connected");
     }
 }
 
@@ -76,6 +81,7 @@ void CALLBACK SimConnectClient::dispatchProc(SIMCONNECT_RECV* pData, DWORD cbDat
             if (pObjData->dwRequestID == static_cast<DWORD>(REQUEST_ID::AIRCRAFT_DATA))
             {
                 AircraftData* pS = (AircraftData*)&pObjData->dwData;
+                VLOG_F(3, "Received aircraft data update");
                 emit client->aircraftDataUpdated(*pS);
             }
             break;
@@ -83,18 +89,25 @@ void CALLBACK SimConnectClient::dispatchProc(SIMCONNECT_RECV* pData, DWORD cbDat
 
         case SIMCONNECT_RECV_ID_QUIT:
         {
+            LOG_F(INFO, "Received SimConnect quit signal");
             client->disconnectFromSim();
             break;
         }
 
         default:
+            VLOG_F(3, "Received unknown SimConnect message: ID=%lu", pData->dwID);
             break;
     }
 }
 
 void SimConnectClient::setupDataRequests()
 {
-    if (!hSimConnect) return;
+    if (!hSimConnect) {
+        LOG_F(WARNING, "Cannot setup data requests - SimConnect not connected");
+        return;
+    }
+    
+    LOG_F(INFO, "Setting up SimConnect data requests...");
 
     // Define the data structure
     SimConnect_AddToDataDefinition(hSimConnect, static_cast<SIMCONNECT_DATA_DEFINITION_ID>(DEFINITION_ID::AIRCRAFT_DATA), "GEAR TOTAL PCT EXTENDED", "Percent");
@@ -122,11 +135,18 @@ void SimConnectClient::setupDataRequests()
 
     // Request data periodically
     SimConnect_RequestDataOnSimObject(hSimConnect, static_cast<SIMCONNECT_DATA_REQUEST_ID>(REQUEST_ID::AIRCRAFT_DATA), static_cast<SIMCONNECT_DATA_DEFINITION_ID>(DEFINITION_ID::AIRCRAFT_DATA), SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_PERIOD_SIM_FRAME);
+    
+    LOG_F(INFO, "SimConnect data requests setup complete");
 }
 
 void SimConnectClient::setupEvents()
 {
-    if (!hSimConnect) return;
+    if (!hSimConnect) {
+        LOG_F(WARNING, "Cannot setup events - SimConnect not connected");
+        return;
+    }
+    
+    LOG_F(INFO, "Setting up SimConnect events...");
 
     // Map client events to SimEvents
     SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_TOGGLE_FLIGHT_DIRECTOR, "TOGGLE_FLIGHT_DIRECTOR");
@@ -157,4 +177,6 @@ void SimConnectClient::setupEvents()
     SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_FLAPS_DOWN, "FLAPS_DOWN");
     SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_PARKING_BRAKES, "PARKING_BRAKES");
     SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_SPOILERS_ARM, "SPOILERS_ARM_TOGGLE");
+    
+    LOG_F(INFO, "SimConnect events setup complete");
 } 
