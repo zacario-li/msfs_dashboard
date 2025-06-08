@@ -2,12 +2,13 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QPushButton>
-#include <QLabel>
-#include <QGridLayout>
 
 #include "SimConnectClient.h"
 #include "AttitudeIndicator.h"
+
+namespace Ui {
+    class MainWindow;
+}
 
 class MainWindow : public QMainWindow
 {
@@ -22,26 +23,12 @@ private slots:
     void onSimConnected();
     void onSimDisconnected();
     void onAircraftDataUpdated(const AircraftData &data);
+    void on_actionsource_code_triggered();
 
 private:
-    void setupUi();
     void updateControlsState(bool isConnected);
 
     SimConnectClient *m_simConnectClient;
-
-    // UI Elements
-    QWidget *m_centralWidget;
-    QGridLayout *m_layout;
-    
-    QPushButton *m_connectButton;
-    QLabel *m_statusLight;
-
-    QPushButton *m_gearButton;
-    QPushButton *m_brakeButton;
-    QPushButton *m_apButton;
-    
-    QLabel *m_gearLabel;
-    
-    AttitudeIndicator *m_attitudeIndicator;
+    Ui::MainWindow *ui;
 };
 #endif // MAINWINDOW_H 

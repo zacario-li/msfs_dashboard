@@ -23,10 +23,12 @@ include_directories(
 # Automatically find source and header files
 file(GLOB SOURCES "src/*.cpp")
 file(GLOB HEADERS "include/*.h")
+file(GLOB UI_FILES "src/*.ui")
 
 add_executable(MSFSDashboard
     ${SOURCES}
     ${HEADERS}
+    ${UI_FILES}
 )
 
 target_link_libraries(MSFSDashboard PRIVATE 
