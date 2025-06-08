@@ -26,8 +26,7 @@ cmake --build . --config Release
 ```
 
 ## 使用
-Qt6.9，当然你可以自行更换版本，并修改cmakelists.txt即可
-[使用说明]
+[使用说明]  
 编译后，在build文件夹中双击MSFSDashboard.exe即可（对了，你必须先启动MSFS2020或者2024）
 
 ## 许可证
