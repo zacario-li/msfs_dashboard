@@ -48,15 +48,30 @@ void AttitudeIndicator::drawBackground(QPainter &painter)
 
     // Bank angle markings
     painter.setPen(Qt::white);
-    for (int i = 0; i < 360; i += 10) {
-        if (i % 30 == 0) {
-            painter.drawLine(0, -98, 0, -90);
+    for (int i = -180; i < 180; i += 10) {
+        painter.save();
+        painter.rotate(i);
+
+        if (i == 0 || abs(i) == 90 || abs(i) == 180 ) {
+             // Major markings (e.g., 0, 90, 180) - could be different length
+        } else if (abs(i) % 30 == 0) {
+            painter.drawLine(0, -98, 0, -88);
+            int angle_to_display = (i < 0) ? -i : i;
+             if (angle_to_display != 60 && angle_to_display != 120 && angle_to_display != 150) {
+                QString text = QString::number(angle_to_display);
+                painter.save();
+                painter.translate(0, -78);
+                painter.rotate(-i); // counter-rotate to keep text upright
+                painter.drawText(QRect(-15, -10, 30, 20), Qt::AlignCenter, text);
+                painter.restore();
+            }
         } else {
             painter.drawLine(0, -98, 0, -94);
         }
-        painter.rotate(10);
+        painter.restore();
     }
-
+    
+    // Restore painter state
     painter.restore();
 }
 
@@ -91,11 +106,17 @@ void AttitudeIndicator::drawPitchAndRoll(QPainter &painter)
 
     // Pitch ladder
     painter.setPen(Qt::white);
+    painter.setFont(QFont("Arial", 8));
     for (int i = -90; i <= 90; i += 10) {
         if (i == 0) continue;
-        int y = -i * pixels_per_degree;
-        int length = (i % 20 == 0) ? 40 : 20;
+        int y = static_cast<int>(-i * pixels_per_degree);
+        int length = (abs(i) % 20 == 0 && i != 0) ? 40 : 20;
         painter.drawLine(-length / 2, y, length / 2, y);
+
+        if (abs(i) % 20 == 0 && i != 0) {
+             painter.drawText(-length / 2 - 25, y + 4, QString::number(i));
+             painter.drawText(length / 2 + 5, y + 4, QString::number(i));
+        }
     }
     
     painter.restore();

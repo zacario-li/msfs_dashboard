@@ -20,14 +20,13 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
+# Automatically find source and header files
+file(GLOB SOURCES "src/*.cpp")
+file(GLOB HEADERS "include/*.h")
+
 add_executable(MSFSDashboard
-    src/main.cpp
-    src/MainWindow.cpp
-    src/SimConnectClient.cpp
-    src/AttitudeIndicator.cpp
-    include/MainWindow.h
-    include/SimConnectClient.h
-    include/AttitudeIndicator.h
+    ${SOURCES}
+    ${HEADERS}
 )
 
 target_link_libraries(MSFSDashboard PRIVATE 
