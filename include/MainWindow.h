@@ -5,6 +5,7 @@
 
 #include "SimConnectClient.h"
 #include "AttitudeIndicator.h"
+#include "Compass.h"
 
 namespace Ui {
     class MainWindow;

@@ -61,6 +61,7 @@ void MainWindow::onSimDisconnected()
     ui->gearLabel->setText("Gear: ---%");
     ui->attitudeIndicator->setRoll(0);
     ui->attitudeIndicator->setPitch(0);
+    ui->compass->setHeading(0);
     ui->gearButton->setChecked(false);
     ui->brakeButton->setChecked(false);
     ui->apButton->setChecked(false);
@@ -83,6 +84,9 @@ void MainWindow::onAircraftDataUpdated(const AircraftData &data)
     float pitch_deg = static_cast<float>(data.attitude_pitch_radians * 180.0 / M_PI);
     ui->attitudeIndicator->setRoll(roll_deg);
     ui->attitudeIndicator->setPitch(pitch_deg);
+
+    // Update Compass
+    ui->compass->setHeading(static_cast<float>(data.plane_heading_degrees_true));
 }
 
 void MainWindow::updateControlsState(bool isConnected)

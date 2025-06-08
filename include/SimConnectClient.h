@@ -14,6 +14,7 @@ struct AircraftData {
     double attitude_bank_radians;
     double attitude_pitch_radians;
     double gear_handle_position;
+    double plane_heading_degrees_true;
 };
 
 class SimConnectClient : public QObject

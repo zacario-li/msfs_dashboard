@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>513</width>
+    <width>968</width>
     <height>324</height>
    </rect>
   </property>
@@ -16,7 +16,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="1" column="0">
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="2,3,3">
       <item>
        <layout class="QVBoxLayout" name="verticalLayout_3" stretch="0,2">
         <item>
@@ -130,6 +130,9 @@
       <item>
        <widget class="AttitudeIndicator" name="attitudeIndicator" native="true"/>
       </item>
+      <item>
+       <widget class="Compass" name="compass" native="true"/>
+      </item>
      </layout>
     </item>
    </layout>
@@ -139,7 +142,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>513</width>
+     <width>968</width>
      <height>22</height>
     </rect>
    </property>
@@ -163,6 +166,12 @@
    <class>AttitudeIndicator</class>
    <extends>QWidget</extends>
    <header>AttitudeIndicator.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>Compass</class>
+   <extends>QWidget</extends>
+   <header>Compass.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
