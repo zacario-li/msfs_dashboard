@@ -15,7 +15,15 @@
 
 ## 构建
 
-[构建说明]
+[构建说明]  
+install Qt6.9 or anyother version, and modify the path in CMakeLists.txt  
+intall SimConnect SDK  
+```
+mkdir build
+cd build
+cmake ..
+cmake --build . --config Release
+```
 
 ## 使用
 Qt6.9，当然你可以自行更换版本，并修改cmakelists.txt即可
