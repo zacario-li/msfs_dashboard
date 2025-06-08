@@ -159,7 +159,7 @@
        </layout>
       </item>
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout_4" stretch="2,1">
+       <layout class="QVBoxLayout" name="verticalLayout_4" stretch="3,1">
         <item>
          <layout class="QHBoxLayout" name="horizonLayout" stretch="1,1">
           <item>

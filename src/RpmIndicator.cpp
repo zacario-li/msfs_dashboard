@@ -17,6 +17,12 @@ void RpmIndicator::setRpmPercent(float rpm)
     update();
 }
 
+void RpmIndicator::setThrottlePercent(float throttle)
+{
+    m_throttle_percent = throttle;
+    update();
+}
+
 void RpmIndicator::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event);
@@ -40,13 +46,19 @@ void RpmIndicator::paintEvent(QPaintEvent *event)
     painter.drawArc(QRectF(-45, -45, 90, 90), startAngle, spanAngle);
 
     // Title (e.g., "ENG 1")
-    painter.setPen(Qt::white);
+    painter.setPen(Qt::black);
     painter.setFont(QFont("Arial", 8));
     painter.drawText(QRectF(-40, -45, 80, 20), Qt::AlignCenter, m_title);
 
-    // Percentage Text
-    painter.setFont(QFont("Arial", 12, QFont::Bold));
-    painter.drawText(QRectF(-40, -15, 80, 30), Qt::AlignCenter, QString::number(m_rpm_percent, 'f', 1) + "%");
+    // RPM Percentage Text
+    painter.setPen(Qt::black);
+    painter.setFont(QFont("Arial", 10, QFont::Bold));
+    painter.drawText(QRectF(-40, -20, 80, 20), Qt::AlignCenter, QString::number(m_rpm_percent, 'f', 1) + "%");
+
+    // Throttle Percentage Text
+    painter.setPen(Qt::black);
+    painter.setFont(QFont("Arial", 8));
+    painter.drawText(QRectF(-40, 5, 80, 20), Qt::AlignCenter, "T: " + QString::number(m_throttle_percent, 'f', 1) + "%");
 
     painter.restore();
 } 

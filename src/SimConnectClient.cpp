@@ -55,36 +55,11 @@ void SimConnectClient::processSimConnectEvents()
     }
 }
 
-void SimConnectClient::setGear(bool down)
+void SimConnectClient::transmitEvent(EVENT_ID eventId, DWORD data)
 {
     if (hSimConnect)
     {
-        SimConnect_TransmitClientEvent(hSimConnect, SIMCONNECT_OBJECT_ID_USER, static_cast<SIMCONNECT_CLIENT_EVENT_ID>(EVENT_ID::GEAR_SET_EVENT), down, SIMCONNECT_GROUP_PRIORITY_HIGHEST, SIMCONNECT_EVENT_FLAG_GROUPID_IS_PRIORITY);
-    }
-}
-
-void SimConnectClient::toggleParkingBrake()
-{
-    if (hSimConnect)
-    {
-        SimConnect_TransmitClientEvent(hSimConnect, SIMCONNECT_OBJECT_ID_USER, static_cast<SIMCONNECT_CLIENT_EVENT_ID>(EVENT_ID::PARKING_BRAKE_TOGGLE), 0, SIMCONNECT_GROUP_PRIORITY_HIGHEST, SIMCONNECT_EVENT_FLAG_GROUPID_IS_PRIORITY);
-    }
-}
-
-void SimConnectClient::toggleAutopilot()
-{
-    if (hSimConnect)
-    {
-        SimConnect_TransmitClientEvent(hSimConnect, SIMCONNECT_OBJECT_ID_USER, static_cast<SIMCONNECT_CLIENT_EVENT_ID>(EVENT_ID::AP_MASTER_TOGGLE), 0, SIMCONNECT_GROUP_PRIORITY_HIGHEST, SIMCONNECT_EVENT_FLAG_GROUPID_IS_PRIORITY);
-    }
-}
-
-void SimConnectClient::setEngineState(int engineIndex, bool start)
-{
-    if (hSimConnect)
-    {
-        EVENT_ID event = start ? EVENT_ID::ENGINE_START : EVENT_ID::ENGINE_SHUTDOWN;
-        SimConnect_TransmitClientEvent(hSimConnect, SIMCONNECT_OBJECT_ID_USER, static_cast<SIMCONNECT_CLIENT_EVENT_ID>(event), engineIndex, SIMCONNECT_GROUP_PRIORITY_HIGHEST, SIMCONNECT_EVENT_FLAG_GROUPID_IS_PRIORITY);
+        SimConnect_TransmitClientEvent(hSimConnect, SIMCONNECT_OBJECT_ID_USER, eventId, data, SIMCONNECT_GROUP_PRIORITY_HIGHEST, SIMCONNECT_EVENT_FLAG_GROUPID_IS_PRIORITY);
     }
 }
 
@@ -136,11 +111,15 @@ void SimConnectClient::setupDataRequests()
     SimConnect_AddToDataDefinition(hSimConnect, static_cast<SIMCONNECT_DATA_DEFINITION_ID>(DEFINITION_ID::AIRCRAFT_DATA), "GEAR CENTER POSITION", "Percent Over 100");
     SimConnect_AddToDataDefinition(hSimConnect, static_cast<SIMCONNECT_DATA_DEFINITION_ID>(DEFINITION_ID::AIRCRAFT_DATA), "GEAR LEFT POSITION", "Percent Over 100");
     SimConnect_AddToDataDefinition(hSimConnect, static_cast<SIMCONNECT_DATA_DEFINITION_ID>(DEFINITION_ID::AIRCRAFT_DATA), "GEAR RIGHT POSITION", "Percent Over 100");
-    SimConnect_AddToDataDefinition(hSimConnect, static_cast<SIMCONNECT_DATA_DEFINITION_ID>(DEFINITION_ID::AIRCRAFT_DATA), "GENERAL ENG RPM:1", "Percent");
-    SimConnect_AddToDataDefinition(hSimConnect, static_cast<SIMCONNECT_DATA_DEFINITION_ID>(DEFINITION_ID::AIRCRAFT_DATA), "GENERAL ENG RPM:2", "Percent");
-    SimConnect_AddToDataDefinition(hSimConnect, static_cast<SIMCONNECT_DATA_DEFINITION_ID>(DEFINITION_ID::AIRCRAFT_DATA), "GENERAL ENG RPM:3", "Percent");
-    SimConnect_AddToDataDefinition(hSimConnect, static_cast<SIMCONNECT_DATA_DEFINITION_ID>(DEFINITION_ID::AIRCRAFT_DATA), "GENERAL ENG RPM:4", "Percent");
-    
+    SimConnect_AddToDataDefinition(hSimConnect, static_cast<SIMCONNECT_DATA_DEFINITION_ID>(DEFINITION_ID::AIRCRAFT_DATA), "TURB ENG N1:1", "Percent");
+    SimConnect_AddToDataDefinition(hSimConnect, static_cast<SIMCONNECT_DATA_DEFINITION_ID>(DEFINITION_ID::AIRCRAFT_DATA), "TURB ENG N1:2", "Percent");
+    SimConnect_AddToDataDefinition(hSimConnect, static_cast<SIMCONNECT_DATA_DEFINITION_ID>(DEFINITION_ID::AIRCRAFT_DATA), "TURB ENG N1:3", "Percent");
+    SimConnect_AddToDataDefinition(hSimConnect, static_cast<SIMCONNECT_DATA_DEFINITION_ID>(DEFINITION_ID::AIRCRAFT_DATA), "TURB ENG N1:4", "Percent");
+    SimConnect_AddToDataDefinition(hSimConnect, static_cast<SIMCONNECT_DATA_DEFINITION_ID>(DEFINITION_ID::AIRCRAFT_DATA), "GENERAL ENG THROTTLE LEVER POSITION:1", "Percent");
+    SimConnect_AddToDataDefinition(hSimConnect, static_cast<SIMCONNECT_DATA_DEFINITION_ID>(DEFINITION_ID::AIRCRAFT_DATA), "GENERAL ENG THROTTLE LEVER POSITION:2", "Percent");
+    SimConnect_AddToDataDefinition(hSimConnect, static_cast<SIMCONNECT_DATA_DEFINITION_ID>(DEFINITION_ID::AIRCRAFT_DATA), "GENERAL ENG THROTTLE LEVER POSITION:3", "Percent");
+    SimConnect_AddToDataDefinition(hSimConnect, static_cast<SIMCONNECT_DATA_DEFINITION_ID>(DEFINITION_ID::AIRCRAFT_DATA), "GENERAL ENG THROTTLE LEVER POSITION:4", "Percent");
+
     // Request data periodically
     SimConnect_RequestDataOnSimObject(hSimConnect, static_cast<SIMCONNECT_DATA_REQUEST_ID>(REQUEST_ID::AIRCRAFT_DATA), static_cast<SIMCONNECT_DATA_DEFINITION_ID>(DEFINITION_ID::AIRCRAFT_DATA), SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_PERIOD_SIM_FRAME);
 }
@@ -148,11 +127,34 @@ void SimConnectClient::setupDataRequests()
 void SimConnectClient::setupEvents()
 {
     if (!hSimConnect) return;
-    
+
     // Map client events to SimEvents
-    SimConnect_MapClientEventToSimEvent(hSimConnect, static_cast<SIMCONNECT_CLIENT_EVENT_ID>(EVENT_ID::GEAR_SET_EVENT), "GEAR_SET");
-    SimConnect_MapClientEventToSimEvent(hSimConnect, static_cast<SIMCONNECT_CLIENT_EVENT_ID>(EVENT_ID::PARKING_BRAKE_TOGGLE), "PARKING_BRAKES");
-    SimConnect_MapClientEventToSimEvent(hSimConnect, static_cast<SIMCONNECT_CLIENT_EVENT_ID>(EVENT_ID::AP_MASTER_TOGGLE), "AP_MASTER");
-    SimConnect_MapClientEventToSimEvent(hSimConnect, static_cast<SIMCONNECT_CLIENT_EVENT_ID>(EVENT_ID::ENGINE_START), "ENGINE_AUTO_START");
-    SimConnect_MapClientEventToSimEvent(hSimConnect, static_cast<SIMCONNECT_CLIENT_EVENT_ID>(EVENT_ID::ENGINE_SHUTDOWN), "ENGINE_AUTO_SHUTDOWN");
+    SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_TOGGLE_FLIGHT_DIRECTOR, "TOGGLE_FLIGHT_DIRECTOR");
+    SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_AP_MASTER, "AP_MASTER");
+    SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_TOGGLE_NAV_GPS, "TOGGLE_GPS_DRIVES_NAV1");
+    SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_AP_NAV1_HOLD, "AP_NAV1_HOLD");
+    SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_AP_APR_HOLD, "AP_APR_HOLD");
+    SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_AP_BC_HOLD, "AP_BC_HOLD");
+    SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_AP_WING_LEVELER, "AP_WING_LEVELER_HOLD");
+    SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_AP_ALT_HOLD, "AP_ALT_HOLD");
+    SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_AP_VS_HOLD, "AP_VS_HOLD");
+    SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_AP_FLC_HOLD, "AP_FL_CHANGE_HOLD");
+    SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_HEADING_BUG_SET, "HEADING_BUG_SET");
+    SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_AP_SPD_VAR_SET, "AP_SPD_VAR_SET");
+    SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_AP_ALT_VAR_SET, "AP_ALT_VAR_SET");
+    SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_AP_VS_VAR_SET, "AP_VS_VAR_SET");
+    SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_AUTO_THROTTLE_ARM, "AUTO_THROTTLE_ARM");
+
+    SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_TOGGLE_ENGINE1_STARTER, "TOGGLE_ENGINE1_STARTER");
+    SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_TOGGLE_ENGINE2_STARTER, "TOGGLE_ENGINE2_STARTER");
+    SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_TOGGLE_ENGINE3_STARTER, "TOGGLE_ENGINE3_STARTER");
+    SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_TOGGLE_ENGINE4_STARTER, "TOGGLE_ENGINE4_STARTER");
+    SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_ENGINE_AUTO_SHUTDOWN, "ENGINE_AUTO_SHUTDOWN");
+
+    SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_GEAR_UP, "GEAR_UP");
+    SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_GEAR_DOWN, "GEAR_DOWN");
+    SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_FLAPS_UP, "FLAPS_UP");
+    SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_FLAPS_DOWN, "FLAPS_DOWN");
+    SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_PARKING_BRAKES, "PARKING_BRAKES");
+    SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_SPOILERS_ARM, "SPOILERS_ARM_TOGGLE");
 } 
